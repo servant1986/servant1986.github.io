@@ -1,192 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bible Video Library</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bible Video Library</title>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: #f6f4ef;
-      color: #1f1f1f;
-    }
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #f6f4ef;
+  color: #1f1f1f;
+}
 
-    header {
-      text-align: center;
-      padding: 4rem 1rem 2.5rem;
-    }
+/* ===== NAVBAR ===== */
+nav {
+  background: #fff;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
 
-    header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 3rem;
-      margin-bottom: 0.75rem;
-    }
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+}
 
-    header p {
-      max-width: 700px;
-      margin: 0 auto;
-      color: #555;
-      font-size: 1.05rem;
-    }
+nav a {
+  text-decoration: none;
+  color: #1f1f1f;
+  font-weight: 500;
+}
 
-    main.columns {
-      max-width: 1400px;
-      margin: 3rem auto;
-      padding: 0 1.5rem 3rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-    }
+nav a:hover {
+  color: #2b5cff;
+}
 
-    section h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.9rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
+/* ===== HEADER ===== */
+header {
+  text-align: center;
+  padding: 3.5rem 1rem 2.5rem;
+}
 
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 2rem;
-    }
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+}
 
-    .card {
-      background: #ffffff;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+/* ===== CONTENT ===== */
+main.columns {
+  max-width: 1400px;
+  margin: 3rem auto;
+  padding: 0 1.5rem 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
-    }
+section h2 {
+  font-family: 'Playfair Display', serif;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
 
-    .card img {
-      width: 100%;
-      display: block;
-    }
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2rem;
+}
 
-    .card-content {
-      padding: 1rem 1.2rem 1.4rem;
-    }
+.card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+}
 
-    .card-content h3 {
-      font-size: 1.05rem;
-      margin: 0 0 0.6rem;
-      line-height: 1.4;
-    }
+.card img {
+  width: 100%;
+  display: block;
+}
 
-    .card-content a {
-      text-decoration: none;
-      color: #2b5cff;
-      font-weight: 500;
-      font-size: 0.9rem;
-    }
+.card-content {
+  padding: 1rem 1.2rem 1.4rem;
+}
 
-    footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: #888;
-      font-size: 0.85rem;
-    }
+footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.85rem;
+  color: #888;
+}
 
-    @media (max-width: 900px) {
-      main.columns {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+@media (max-width: 900px) {
+  main.columns { grid-template-columns: 1fr; }
+}
+</style>
 </head>
+
 <body>
 
-  <header>
-    <h1>Bible Video Library</h1>
-    <p>Daily devotions and Scripture teaching videos to help you grow in God’s Word.</p>
-  </header>
+<nav>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="daily-devotions.html">Daily Devotions</a></li>
+    <li><a href="timothy-project.html">1 Timothy 4:13 Project</a></li>
+  </ul>
+</nav>
 
-  <main class="columns">
+<header>
+  <h1>Bible Video Library</h1>
+  <p>Daily devotions and Scripture teaching videos.</p>
+</header>
 
-    <section>
-      <h2>Daily Devotions</h2>
-      <div id="dailyDevotions" class="video-grid"></div>
-    </section>
+<main class="columns">
+  <section>
+    <h2>Daily Devotions</h2>
+    <div id="dailyDevotions" class="video-grid"></div>
+  </section>
 
-    <section>
-      <h2>1 Timothy 4:13 Project</h2>
-      <div id="timothyProject" class="video-grid"></div>
-    </section>
+  <section>
+    <h2>1 Timothy 4:13 Project</h2>
+    <div id="timothyProject" class="video-grid"></div>
+  </section>
+</main>
 
-  </main>
+<footer>© 2026 Bible Video Library</footer>
 
-  <footer>
-    © 2026 Bible Video Library · Hosted on GitHub Pages
-  </footer>
+<script>
+const API_KEY = "YOUR_API_KEY";
 
-  <script>
-    // ============ CONFIG ============
-    const API_KEY = "AIzaSyDRd_YN-tjyy1wuDpotgYHoOT9niiOOsEQ";
+const PLAYLISTS = [
+  { id: "DAILY_DEVOTIONS_PLAYLIST_ID", container: "dailyDevotions" },
+  { id: "TIMOTHY_PROJECT_PLAYLIST_ID", container: "timothyProject" }
+];
 
-    const PLAYLISTS = {
-      daily: {
-        id: "PLtpb-Y9QLGz5et2tAyq7p0bWnM9Fs82-p",
-        container: "dailyDevotions"
-      },
-      timothy: {
-        id: "PLtpb-Y9QLGz7n5-ujPDAfar7P1QIe_vqj",
-        container: "timothyProject"
-      }
-    };
+async function loadPlaylist(playlistId, containerId) {
+  const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=10&playlistId=${playlistId}&key=${API_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
 
-    // ============ FUNCTIONS ============
-    async function loadPlaylist(playlistId, containerId) {
-      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${playlistId}&key=${API_KEY}`;
+  const container = document.getElementById(containerId);
 
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
+  data.items.forEach(item => {
+    if (!item.snippet || item.snippet.title === "Private video") return;
 
-        const container = document.getElementById(containerId);
-        container.innerHTML = "";
+    container.innerHTML += `
+      <div class="card">
+        <img src="${item.snippet.thumbnails.medium.url}" loading="lazy">
+        <div class="card-content">
+          <h3>${item.snippet.title}</h3>
+          <a href="https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}" target="_blank">
+            Watch on YouTube
+          </a>
+        </div>
+      </div>
+    `;
+  });
+}
 
-        data.items.forEach(item => {
-          const videoId = item.snippet.resourceId.videoId;
-          const title = item.snippet.title;
-          const thumbnail = item.snippet.thumbnails.medium.url;
-
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <img src="${thumbnail}" alt="${title}">
-            <div class="card-content">
-              <h3>${title}</h3>
-              <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">Watch on YouTube</a>
-            </div>
-          `;
-
-          container.appendChild(card);
-        });
-
-      } catch (err) {
-        console.error("Failed to load playlist", err);
-      }
-    }
-
-    // ============ INIT ============
-    loadPlaylist(PLAYLISTS.daily.id, PLAYLISTS.daily.container);
-    loadPlaylist(PLAYLISTS.timothy.id, PLAYLISTS.timothy.container);
-  </script>
+PLAYLISTS.forEach(p => loadPlaylist(p.id, p.container));
+</script>
 
 </body>
 </html>
