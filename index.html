@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bible Verse Videos</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f6f4ef;
+      color: #1f1f1f;
+    }
+
+    header {
+      text-align: center;
+      padding: 4rem 1rem 2rem;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      color: #555;
+    }
+
+    .search-box {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      overflow: hidden;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card img {
+      width: 100%;
+      display: block;
+    }
+
+    .card-content {
+      padding: 1rem 1.2rem 1.4rem;
+    }
+
+    .card-content h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      margin: 0 0 0.5rem;
+    }
+
+    .card-content p {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-actions a {
+      text-decoration: none;
+      color: #2b5cff;
+      font-weight: 500;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #888;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Bible Verse Videos</h1>
+    <p>Explore and study Bible verses through video teachings. Search by book and grow in Scripture.</p>
+
+    <div class="search-box">
+      <input type="text" placeholder="Search by book (e.g., Genesis, Proverbs...)" />
+    </div>
+  </header>
+
+  <main id="videoGrid">
+    <!-- Video cards will go here -->
+
+    <!-- SAMPLE CARD (static for now) -->
+    <div class="card">
+      <img src="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="Video thumbnail">
+      <div class="card-content">
+        <h3>1 Timothy 4:13 Project</h3>
+        <p>Genesis 1:1–10 & Proverbs</p>
+        <div class="card-actions">
+          <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Watch</a>
+          <span>♡</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    © 2026 Bible Verse Videos · Built with GitHub Pages
+  </footer>
+
+</body>
+</html>
