@@ -3,12 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bible Verse Videos</title>
+  <title>Bible Video Library</title>
 
-  <!-- Google Font -->
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
@@ -18,49 +22,38 @@
 
     header {
       text-align: center;
-      padding: 4rem 1rem 2rem;
+      padding: 4rem 1rem 2.5rem;
     }
 
     header h1 {
       font-family: 'Playfair Display', serif;
       font-size: 3rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
     }
 
     header p {
-      max-width: 600px;
-      margin: 0 auto 2rem;
-      color: #555;
-    }
-
-    .search-box {
-      max-width: 500px;
+      max-width: 700px;
       margin: 0 auto;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      font-size: 1rem;
+      color: #555;
+      font-size: 1.05rem;
     }
 
     main.columns {
       max-width: 1400px;
       margin: 3rem auto;
-      padding: 0 1rem;
+      padding: 0 1.5rem 3rem;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 3rem;
     }
-    
+
     section h2 {
       font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
+      font-size: 1.9rem;
       margin-bottom: 1.5rem;
+      text-align: center;
     }
-    
+
     .video-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -68,15 +61,16 @@
     }
 
     .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      background: #ffffff;
+      border-radius: 14px;
       overflow: hidden;
-      transition: transform 0.2s ease;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .card:hover {
       transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
     }
 
     .card img {
@@ -89,27 +83,16 @@
     }
 
     .card-content h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      margin: 0 0 0.5rem;
+      font-size: 1.05rem;
+      margin: 0 0 0.6rem;
+      line-height: 1.4;
     }
 
-    .card-content p {
-      font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 1rem;
-    }
-
-    .card-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .card-actions a {
+    .card-content a {
       text-decoration: none;
       color: #2b5cff;
       font-weight: 500;
+      font-size: 0.9rem;
     }
 
     footer {
@@ -118,40 +101,92 @@
       color: #888;
       font-size: 0.85rem;
     }
+
+    @media (max-width: 900px) {
+      main.columns {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Bible Verse Videos</h1>
-    <p>Explore and study Bible verses through video teachings. Search by book and grow in Scripture.</p>
-
-    <div class="search-box">
-      <input type="text" placeholder="Search by book (e.g., Genesis, Proverbs...)" />
-    </div>
+    <h1>Bible Video Library</h1>
+    <p>Daily devotions and Scripture teaching videos to help you grow in God’s Word.</p>
   </header>
 
-  <main id="videoGrid">
-    <!-- Video cards will go here -->
+  <main class="columns">
 
-    <!-- SAMPLE CARD (static for now) -->
-    <div class="card">
-      <img src="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="Video thumbnail">
-      <div class="card-content">
-        <h3>1 Timothy 4:13 Project</h3>
-        <p>Genesis 1:1–10 & Proverbs</p>
-        <div class="card-actions">
-          <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Watch</a>
-          <span>♡</span>
-        </div>
-      </div>
-    </div>
+    <section>
+      <h2>Daily Devotions</h2>
+      <div id="dailyDevotions" class="video-grid"></div>
+    </section>
+
+    <section>
+      <h2>Timothy Project</h2>
+      <div id="timothyProject" class="video-grid"></div>
+    </section>
 
   </main>
 
   <footer>
-    © 2026 Bible Verse Videos · Built with GitHub Pages
+    © 2026 Bible Video Library · Hosted on GitHub Pages
   </footer>
+
+  <script>
+    // ============ CONFIG ============
+    const API_KEY = "YOUR_YOUTUBE_API_KEY";
+
+    const PLAYLISTS = {
+      daily: {
+        id: "DAILY_DEVOTIONS_PLAYLIST_ID",
+        container: "dailyDevotions"
+      },
+      timothy: {
+        id: "TIMOTHY_PROJECT_PLAYLIST_ID",
+        container: "timothyProject"
+      }
+    };
+
+    // ============ FUNCTIONS ============
+    async function loadPlaylist(playlistId, containerId) {
+      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${playlistId}&key=${API_KEY}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        data.items.forEach(item => {
+          const videoId = item.snippet.resourceId.videoId;
+          const title = item.snippet.title;
+          const thumbnail = item.snippet.thumbnails.medium.url;
+
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <img src="${thumbnail}" alt="${title}">
+            <div class="card-content">
+              <h3>${title}</h3>
+              <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">Watch on YouTube</a>
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error("Failed to load playlist", err);
+      }
+    }
+
+    // ============ INIT ============
+    loadPlaylist(PLAYLISTS.daily.id, PLAYLISTS.daily.container);
+    loadPlaylist(PLAYLISTS.timothy.id, PLAYLISTS.timothy.container);
+  </script>
 
 </body>
 </html>
