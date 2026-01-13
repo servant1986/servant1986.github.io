@@ -9,9 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -66,6 +64,8 @@
       overflow: hidden;
       box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      position: relative;
     }
 
     .card:hover {
@@ -73,26 +73,30 @@
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
     }
 
-    .card img {
-      width: 100%;
-      display: block;
-    }
+    .card img { width: 100%; display: block; }
 
-    .card-content {
-      padding: 1rem 1.2rem 1.4rem;
-    }
+    .card-content { padding: 1rem 1.2rem 1.4rem; }
 
     .card-content h3 {
       font-size: 1.05rem;
-      margin: 0 0 0.6rem;
+      margin: 0 0 0.8rem;
       line-height: 1.4;
     }
 
-    .card-content a {
-      text-decoration: none;
-      color: #2b5cff;
-      font-weight: 500;
+    .actions {
+      display: flex;
+      justify-content: space-between;
       font-size: 0.9rem;
+    }
+
+    .actions span {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .active {
+      color: #e63946;
+      font-weight: 600;
     }
 
     footer {
@@ -103,39 +107,31 @@
     }
 
     @media (max-width: 900px) {
-      main.columns {
-        grid-template-columns: 1fr;
-      }
+      main.columns { grid-template-columns: 1fr; }
     }
 
-    /* Modal styles */
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
       z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.75);
       justify-content: center;
       align-items: center;
     }
 
     .modal-content {
-      position: relative;
       width: 90%;
       max-width: 900px;
       aspect-ratio: 16 / 9;
       background: #000;
       border-radius: 12px;
       overflow: hidden;
+      position: relative;
     }
 
-    .modal-content iframe {
-      width: 100%;
-      height: 100%;
-    }
+    .modal iframe { width: 100%; height: 100%; }
 
     .close {
       position: absolute;
@@ -146,117 +142,120 @@
       cursor: pointer;
       z-index: 1001;
     }
-    }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Bible Video Library</h1>
-    <p>Daily devotions and Scripture teaching videos to help you grow in God’s Word.</p>
-  </header>
+<header>
+  <h1>Bible Video Library</h1>
+  <p>Daily devotions and Scripture teaching videos to help you grow in God’s Word.</p>
+</header>
 
-  <main class="columns">
+<main class="columns">
+  <section>
+    <h2>Daily Devotions</h2>
+    <div id="dailyDevotions" class="video-grid"></div>
+  </section>
 
-    <section>
-      <h2>Daily Devotions</h2>
-      <div id="dailyDevotions" class="video-grid"></div>
-    </section>
+  <section>
+    <h2>Timothy Project</h2>
+    <div id="timothyProject" class="video-grid"></div>
+  </section>
+</main>
 
-    <section>
-      <h2>Timothy Project</h2>
-      <div id="timothyProject" class="video-grid"></div>
-    </section>
+<footer>
+  © 2026 Bible Video Library · Hosted on GitHub Pages
+</footer>
 
-  </main>
-
-  <footer>
-    © 2026 Bible Video Library · Hosted on GitHub Pages
-  </footer>
-
-  <!-- Video Modal -->
-  <div id="videoModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <iframe id="videoFrame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
+<!-- Modal -->
+<div id="videoModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <iframe id="videoFrame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
+</div>
 
-  <script>
-    // ============ CONFIG ============
-    const API_KEY = "AIzaSyDRd_YN-tjyy1wuDpotgYHoOT9niiOOsEQ";
+<script>
+  const API_KEY = "YOUR_YOUTUBE_API_KEY";
 
-    const PLAYLISTS = {
-      daily: {
-        id: "PLtpb-Y9QLGz5et2tAyq7p0bWnM9Fs82-p",
-        container: "dailyDevotions"
-      },
-      timothy: {
-        id: "PLtpb-Y9QLGz7n5-ujPDAfar7P1QIe_vqj",
-        container: "timothyProject"
-      }
-    };
+  const PLAYLISTS = {
+    daily: { id: "DAILY_DEVOTIONS_PLAYLIST_ID", container: "dailyDevotions" },
+    timothy: { id: "TIMOTHY_PROJECT_PLAYLIST_ID", container: "timothyProject" }
+  };
 
-    // ============ FUNCTIONS ============
-    async function loadPlaylist(playlistId, containerId) {
-      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${playlistId}&key=${API_KEY}`;
+  const modal = document.getElementById("videoModal");
+  const frame = document.getElementById("videoFrame");
+  document.querySelector('.close').onclick = closeModal;
+  modal.onclick = e => e.target === modal && closeModal();
 
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
+  function openModal(videoId) {
+    frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    modal.style.display = 'flex';
+  }
 
-        const container = document.getElementById(containerId);
-        container.innerHTML = "";
+  function closeModal() {
+    frame.src = '';
+    modal.style.display = 'none';
+  }
 
-        data.items.forEach(item => {
-          const videoId = item.snippet.resourceId.videoId;
-          const title = item.snippet.title;
-          const thumbnail = item.snippet.thumbnails.medium.url;
+  function getStore(key) {
+    return JSON.parse(localStorage.getItem(key)) || [];
+  }
 
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <img src="${thumbnail}" alt="${title}">
-            <div class="card-content">
-              <h3>${title}</h3>
-              <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">Watch on YouTube</a>
-            </div>
-          `;
+  function toggleStore(key, id) {
+    const data = getStore(key);
+    const index = data.indexOf(id);
+    index === -1 ? data.push(id) : data.splice(index, 1);
+    localStorage.setItem(key, JSON.stringify(data));
+    return data.includes(id);
+  }
 
-          card.addEventListener("click", () => openModal(videoId));
+  async function loadPlaylist(playlistId, containerId) {
+    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${playlistId}&key=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
 
-          container.appendChild(card);
-        });
+    data.items.forEach(item => {
+      const videoId = item.snippet.resourceId.videoId;
+      const title = item.snippet.title;
+      const thumb = item.snippet.thumbnails.medium.url;
 
-      } catch (err) {
-        console.error("Failed to load playlist", err);
-      }
-    }
+      const favs = getStore('favorites');
+      const done = getStore('finished');
 
-    // ============ MODAL LOGIC ============
-    const modal = document.getElementById("videoModal");
-    const frame = document.getElementById("videoFrame");
-    const closeBtn = document.querySelector(".close");
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${thumb}">
+        <div class="card-content">
+          <h3>${title}</h3>
+          <div class="actions">
+            <span class="fav ${favs.includes(videoId) ? 'active' : ''}">❤️ Favorite</span>
+            <span class="done ${done.includes(videoId) ? 'active' : ''}">✔ Finished</span>
+          </div>
+        </div>`;
 
-    function openModal(videoId) {
-      frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-      modal.style.display = "flex";
-    }
+      card.onclick = () => openModal(videoId);
 
-    function closeModal() {
-      modal.style.display = "none";
-      frame.src = "";
-    }
+      card.querySelector('.fav').onclick = e => {
+        e.stopPropagation();
+        e.target.classList.toggle('active', toggleStore('favorites', videoId));
+      };
 
-    closeBtn.onclick = closeModal;
-    modal.onclick = e => {
-      if (e.target === modal) closeModal();
-    };
+      card.querySelector('.done').onclick = e => {
+        e.stopPropagation();
+        e.target.classList.toggle('active', toggleStore('finished', videoId));
+      };
 
-    // ============ INIT ============
-    loadPlaylist(PLAYLISTS.daily.id, PLAYLISTS.daily.container);
-    loadPlaylist(PLAYLISTS.timothy.id, PLAYLISTS.timothy.container);
-  </script>
+      container.appendChild(card);
+    });
+  }
+
+  loadPlaylist(PLAYLISTS.daily.id, PLAYLISTS.daily.container);
+  loadPlaylist(PLAYLISTS.timothy.id, PLAYLISTS.timothy.container);
+</script>
 
 </body>
 </html>
