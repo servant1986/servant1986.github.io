@@ -261,10 +261,11 @@
 
       const card = document.createElement('div');
       card.className = 'card';
+      if (done.includes(videoId)) {
+        card.classList.add('finished');
+      }
+      
       card.innerHTML = `
-        if (done.includes(videoId)) {
-          card.classList.add('finished');
-        }
         <img src="${thumb}">
         <div class="card-content">
           <h3>${title}</h3>
@@ -273,7 +274,7 @@
             <span class="done ${done.includes(videoId) ? 'active' : ''}">✔ Finished</span>
           </div>
         </div>`;
-
+      
       card.onclick = () => openModal(videoId);
 
       card.querySelector('.fav').onclick = e => {
