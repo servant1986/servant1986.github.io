@@ -134,26 +134,52 @@ footer {
 const API_KEY = "AIzaSyDRd_YN-tjyy1wuDpotgYHoOT9niiOOsEQ";
 const PLAYLIST_ID = "PLtpb-Y9QLGz7n5-ujPDAfar7P1QIe_vqj";
 
-loadPlaylist(PLAYLIST_ID, "videoGrid");
+async function loadAllVideos() {
+  const container = document.getElementById('videoGrid');
+  container.innerHTML = '';
 
-async function loadPlaylist(id, container) {
-  let url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${id}&key=${API_KEY}`;
-  const res = await fetch(url);
-  const data = await res.json();
+  let nextPageToken = '';
 
-  data.items.forEach(item => {
-    if (!item.snippet || item.snippet.title === "Private video") return;
+  do {
+    const url =
+      `https://www.googleapis.com/youtube/v3/playlistItems` +
+      `?part=snippet` +
+      `&maxResults=50` +
+      `&playlistId=${PLAYLIST_ID}` +
+      `&pageToken=${nextPageToken}` +
+      `&key=${API_KEY}`;
 
-    document.getElementById(container).innerHTML += `
-      <div class="card">
-        <img src="${item.snippet.thumbnails.medium.url}">
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.items) {
+      container.innerHTML = '<p>Failed to load videos.</p>';
+      return;
+    }
+
+    data.items.forEach(item => {
+      const videoId = item.snippet.resourceId.videoId;
+      const title = item.snippet.title;
+      const thumb = item.snippet.thumbnails.medium.url;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${thumb}">
         <div class="card-content">
-          <h3>${item.snippet.title}</h3>
+          <h3>${title}</h3>
         </div>
-      </div>
-    `;
-  });
+      `;
+      card.onclick = () => openModal(videoId);
+      container.appendChild(card);
+    });
+
+    nextPageToken = data.nextPageToken || '';
+
+  } while (nextPageToken);
 }
+
+loadAllVideos();
 </script>
 
 </body>
