@@ -1,244 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bible Video Library</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bible Video Library</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
-<style>
-* { box-sizing: border-box; }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: #f6f4ef;
-  color: #1f1f1f;
-}
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f6f4ef;
+      color: #1f1f1f;
+    }
 
-/* ===== NAVBAR ===== */
-nav {
-  background: #fff;
-  padding: 1rem 2rem;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-}
+    header {
+      text-align: center;
+      padding: 4rem 1rem 2.5rem;
+    }
 
-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 2rem;
-  margin: 0;
-  padding: 0;
-  justify-content: center;
-}
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+    }
 
-nav a {
-  text-decoration: none;
-  color: #1f1f1f;
-  font-weight: 500;
-}
+    header p {
+      max-width: 700px;
+      margin: 0 auto;
+      color: #555;
+      font-size: 1.05rem;
+    }
 
-nav a:hover {
-  color: #2b5cff;
-}
+    main.columns {
+      max-width: 1400px;
+      margin: 3rem auto;
+      padding: 0 1.5rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
 
-/* ===== HEADER ===== */
-header {
-  text-align: center;
-  padding: 3.5rem 1rem 2.5rem;
-}
+    section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
 
-header h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 3rem;
-  margin-bottom: 0.75rem;
-}
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 2rem;
+    }
 
-/* ===== CONTENT ===== */
-main.columns {
-  max-width: 1400px;
-  margin: 3rem auto;
-  padding: 0 1.5rem 3rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-}
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-section h2 {
-  font-family: 'Playfair Display', serif;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+    }
 
-.video-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 2rem;
-}
+    .card img {
+      width: 100%;
+      display: block;
+    }
 
-.card {
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
-}
+    .card-content {
+      padding: 1rem 1.2rem 1.4rem;
+    }
 
-.card img {
-  width: 100%;
-  display: block;
-}
+    .card-content h3 {
+      font-size: 1.05rem;
+      margin: 0 0 0.6rem;
+      line-height: 1.4;
+    }
 
-.card-content {
-  padding: 1rem 1.2rem 1.4rem;
-}
+    .card-content a {
+      text-decoration: none;
+      color: #2b5cff;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
 
-footer {
-  text-align: center;
-  padding: 2rem;
-  font-size: 0.85rem;
-  color: #888;
-}
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #888;
+      font-size: 0.85rem;
+    }
 
-@media (max-width: 900px) {
-  main.columns { grid-template-columns: 1fr; }
-}
+    @media (max-width: 900px) {
+      main.columns {
+        grid-template-columns: 1fr;
+      }
+    }
 
-/* ===== MODAL ===== */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-}
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      justify-content: center;
+      align-items: center;
+    }
 
-.modal-content {
-  position: relative;
-  width: 90%;
-  max-width: 900px;
-  aspect-ratio: 16 / 9;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-}
+    .modal-content {
+      position: relative;
+      width: 90%;
+      max-width: 900px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+    }
 
-.modal iframe {
-  width: 100%;
-  height: 100%;
-}
+    .modal-content iframe {
+      width: 100%;
+      height: 100%;
+    }
 
-.close-btn {
-  position: absolute;
-  top: -40px;
-  right: 0;
-  color: #fff;
-  font-size: 2.2rem;
-  cursor: pointer;
-  font-weight: bold;
-}
-</style>
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    }
+  </style>
 </head>
-
 <body>
 
-<nav>
-  <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="daily-devotions.html">Daily Devotions</a></li>
-    <li><a href="timothy-project.html">1 Timothy 4:13 Project</a></li>
-  </ul>
-</nav>
+  <header>
+    <h1>Bible Video Library</h1>
+    <p>Daily devotions and Scripture teaching videos to help you grow in God’s Word.</p>
+  </header>
 
-<header>
-  <h1>Bible Video Library</h1>
-  <p>Daily devotions and Scripture teaching videos.</p>
-</header>
+  <main class="columns">
 
-<main class="columns">
-  <section>
-    <h2>Daily Devotions</h2>
-    <div id="dailyDevotions" class="video-grid"></div>
-  </section>
+    <section>
+      <h2>Daily Devotions</h2>
+      <div id="dailyDevotions" class="video-grid"></div>
+    </section>
 
-  <section>
-    <h2>1 Timothy 4:13 Project</h2>
-    <div id="timothyProject" class="video-grid"></div>
-  </section>
-</main>
+    <section>
+      <h2>Timothy Project</h2>
+      <div id="timothyProject" class="video-grid"></div>
+    </section>
 
-<footer>© 2026 Bible Video Library</footer>
+  </main>
 
-<script>
-const API_KEY = "AIzaSyDRd_YN-tjyy1wuDpotgYHoOT9niiOOsEQ";
+  <footer>
+    © 2026 Bible Video Library · Hosted on GitHub Pages
+  </footer>
 
-const PLAYLISTS = [
-  { id: "PLtpb-Y9QLGz5et2tAyq7p0bWnM9Fs82-p", container: "dailyDevotions" },
-  { id: "PLtpb-Y9QLGz7n5-ujPDAfar7P1QIe_vqj", container: "timothyProject" }
-];
-
-async function loadPlaylist(playlistId, containerId) {
-  const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=10&playlistId=${playlistId}&key=${API_KEY}`;
-  const res = await fetch(url);
-  const data = await res.json();
-
-  const container = document.getElementById(containerId);
-
-  data.items.forEach(item => {
-    if (!item.snippet || item.snippet.title === "Private video") return;
-
-    container.innerHTML += `
-      <div class="card">
-        <img src="${item.snippet.thumbnails.medium.url}" loading="lazy">
-        <div class="card-content">
-          <h3>${item.snippet.title}</h3>
-          <a href="https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}" target="_blank">
-            Watch on YouTube
-          </a>
-        </div>
-      </div>
-    `;
-  });
-}
-
-PLAYLISTS.forEach(p => loadPlaylist(p.id, p.container));
-
-function openModal(videoId) {
-  const modal = document.getElementById("videoModal");
-  const frame = document.getElementById("videoFrame");
-
-  frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-  modal.style.display = "flex";
-}
-
-function closeModal() {
-  const modal = document.getElementById("videoModal");
-  const frame = document.getElementById("videoFrame");
-
-  frame.src = "";
-  modal.style.display = "none";
-}
-
-// Close modal when clicking outside video
-document.getElementById("videoModal").addEventListener("click", e => {
-  if (e.target.id === "videoModal") closeModal();
-});
-</script>
-
-    <!-- ===== VIDEO MODAL ===== -->
-    <div id="videoModal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn" onclick="closeModal()">×</span>
-        <iframe
-          id="videoFrame"
-          src=""
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
+  <!-- Video Modal -->
+  <div id="videoModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <iframe id="videoFrame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
+  </div>
+
+  <script>
+    // ============ CONFIG ============
+    const API_KEY = "AIzaSyDRd_YN-tjyy1wuDpotgYHoOT9niiOOsEQ";
+
+    const PLAYLISTS = {
+      daily: {
+        id: "PLtpb-Y9QLGz5et2tAyq7p0bWnM9Fs82-p",
+        container: "dailyDevotions"
+      },
+      timothy: {
+        id: "PLtpb-Y9QLGz7n5-ujPDAfar7P1QIe_vqj",
+        container: "timothyProject"
+      }
+    };
+
+    // ============ FUNCTIONS ============
+    async function loadPlaylist(playlistId, containerId) {
+      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${playlistId}&key=${API_KEY}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        data.items.forEach(item => {
+          const videoId = item.snippet.resourceId.videoId;
+          const title = item.snippet.title;
+          const thumbnail = item.snippet.thumbnails.medium.url;
+
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <img src="${thumbnail}" alt="${title}">
+            <div class="card-content">
+              <h3>${title}</h3>
+              <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">Watch on YouTube</a>
+            </div>
+          `;
+
+          card.addEventListener("click", () => openModal(videoId));
+
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error("Failed to load playlist", err);
+      }
+    }
+
+    // ============ MODAL LOGIC ============
+    const modal = document.getElementById("videoModal");
+    const frame = document.getElementById("videoFrame");
+    const closeBtn = document.querySelector(".close");
+
+    function openModal(videoId) {
+      frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+      modal.style.display = "flex";
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+      frame.src = "";
+    }
+
+    closeBtn.onclick = closeModal;
+    modal.onclick = e => {
+      if (e.target === modal) closeModal();
+    };
+
+    // ============ INIT ============
+    loadPlaylist(PLAYLISTS.daily.id, PLAYLISTS.daily.container);
+    loadPlaylist(PLAYLISTS.timothy.id, PLAYLISTS.timothy.container);
+  </script>
+
 </body>
 </html>
