@@ -244,57 +244,103 @@
     return data.includes(id);
   }
 
-  async function loadPlaylist(playlistId, containerId) {
+  // Daily Devotion: Show only today's video
+  async function loadDailyDevotion(playlistId, containerId) {
     const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${playlistId}&key=${API_KEY}`;
     const res = await fetch(url);
     const data = await res.json();
     const container = document.getElementById(containerId);
     container.innerHTML = '';
 
-    data.items.forEach(item => {
-      const videoId = item.snippet.resourceId.videoId;
-      const title = item.snippet.title;
-      const thumb = item.snippet.thumbnails.medium.url;
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
 
-      const favs = getStore('favorites');
-      const done = getStore('finished');
+    // Find video published today
+    const todaysVideo = data.items.find(item => item.snippet.publishedAt.startsWith(todayStr));
 
-      const card = document.createElement('div');
-      card.className = 'card';
-      if (done.includes(videoId)) {
-        card.classList.add('finished');
-      }
-      
-      card.innerHTML = `
-        <img src="${thumb}">
-        <div class="card-content">
-          <h3>${title}</h3>
-          <div class="actions">
-            <span class="fav ${favs.includes(videoId) ? 'active' : ''}">❤️ Favorite</span>
-            <span class="done ${done.includes(videoId) ? 'active' : ''}">✔ Finished</span>
-          </div>
-        </div>`;
-      
-      card.onclick = () => openModal(videoId);
-
-      card.querySelector('.fav').onclick = e => {
-        e.stopPropagation();
-        e.target.classList.toggle('active', toggleStore('favorites', videoId));
-      };
-
-      card.querySelector('.done').onclick = e => {
-        e.stopPropagation();
-        const isDone = toggleStore('finished', videoId);
-        e.target.classList.toggle('active', isDone);
-        card.classList.toggle('finished', isDone);
-      };
-
-      container.appendChild(card);
-    });
+    if (todaysVideo) {
+      createVideoCard(container, todaysVideo);
+    } else {
+      container.innerHTML = '<p>No video for today.</p>';
+    }
   }
 
-  loadPlaylist(PLAYLISTS.daily.id, PLAYLISTS.daily.container);
-  loadPlaylist(PLAYLISTS.timothy.id, PLAYLISTS.timothy.container);
+  // Timothy Project: Show only episodes on this day (month + day), any year
+  async function loadTimothyProject(playlistId, containerId) {
+    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+
+    const today = new Date();
+    const month = today.getMonth(); // 0-based
+    const date = today.getDate();
+
+    let matches = data.items.filter(item => {
+      const published = new Date(item.snippet.publishedAt);
+      return published.getMonth() === month && published.getDate() === date;
+    });
+
+    // Leap year fallback: Feb 29 → Feb 28
+    if (month === 1 && date === 29 && matches.length === 0) {
+      matches = data.items.filter(item => {
+        const published = new Date(item.snippet.publishedAt);
+        return published.getMonth() === 1 && published.getDate() === 28;
+      });
+    }
+
+    if (matches.length === 0) {
+      container.innerHTML = '<p>No episodes released on this day.</p>';
+    } else {
+      matches.forEach(item => createVideoCard(container, item));
+    }
+  }
+
+  // Helper function to create video card
+  function createVideoCard(container, item) {
+    const videoId = item.snippet.resourceId.videoId;
+    const title = item.snippet.title;
+    const thumb = item.snippet.thumbnails.medium.url;
+
+    const favs = getStore('favorites');
+    const done = getStore('finished');
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    if (done.includes(videoId)) card.classList.add('finished');
+
+    card.innerHTML = `
+      <img src="${thumb}">
+      <div class="card-content">
+        <h3>${title}</h3>
+        <div class="actions">
+          <span class="fav ${favs.includes(videoId) ? 'active' : ''}">❤️ Favorite</span>
+          <span class="done ${done.includes(videoId) ? 'active' : ''}">✔ Finished</span>
+        </div>
+      </div>
+    `;
+
+    card.onclick = () => openModal(videoId);
+
+    card.querySelector('.fav').onclick = e => {
+      e.stopPropagation();
+      e.target.classList.toggle('active', toggleStore('favorites', videoId));
+    };
+
+    card.querySelector('.done').onclick = e => {
+      e.stopPropagation();
+      const isDone = toggleStore('finished', videoId);
+      e.target.classList.toggle('active', isDone);
+      card.classList.toggle('finished', isDone);
+    };
+
+    container.appendChild(card);
+  }
+
+  // Load both playlists
+  loadDailyDevotion(PLAYLISTS.daily.id, PLAYLISTS.daily.container);
+  loadTimothyProject(PLAYLISTS.timothy.id, PLAYLISTS.timothy.container);
 </script>
 
 </body>
