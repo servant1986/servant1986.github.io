@@ -284,62 +284,48 @@
     container.appendChild(card);
   }
 
-  // Daily Devotion: only today's video
-  async function loadDailyDevotion(playlistId, containerId) {
-    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${playlistId}&key=${API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
-
-    const todaysVideo = data.items.find(item => item.snippet.publishedAt.startsWith(todayStr));
-
-    if (todaysVideo) {
-      createVideoCard(container, todaysVideo);
-    } else {
-      container.innerHTML = '<p>No video for today.</p>';
-    }
-  }
-
-  // Timothy Project: only episodes with same month+day
-  async function loadTimothyProject(playlistId, containerId) {
-    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-
+  // Load maximum of 3 videos for Home page
+  async function loadHomeVideos() {
     const today = new Date();
     const month = today.getMonth(); // 0-based
     const date = today.getDate();
+    const todayStr = today.toISOString().split('T')[0];
 
-    let matches = data.items.filter(item => {
+    const homeVideos = []; // store the videos to display
+    const dailyContainer = document.getElementById(PLAYLISTS.daily.container);
+    const timothyContainer = document.getElementById(PLAYLISTS.timothy.container);
+
+    // 1️⃣ Daily Devotion
+    let res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${PLAYLISTS.daily.id}&key=${API_KEY}`);
+    let data = await res.json();
+    const todaysVideo = data.items.find(item => item.snippet.publishedAt.startsWith(todayStr));
+    if (todaysVideo) homeVideos.push({ container: dailyContainer, item: todaysVideo });
+
+    // 2️⃣ Timothy Project
+    res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${PLAYLISTS.timothy.id}&key=${API_KEY}`);
+    data = await res.json();
+
+    let timothyMatches = data.items.filter(item => {
       const published = new Date(item.snippet.publishedAt);
       return published.getMonth() === month && published.getDate() === date;
     });
 
     // Leap year fallback: Feb 29 → Feb 28
-    if (month === 1 && date === 29 && matches.length === 0) {
-      matches = data.items.filter(item => {
+    if (month === 1 && date === 29 && timothyMatches.length === 0) {
+      timothyMatches = data.items.filter(item => {
         const published = new Date(item.snippet.publishedAt);
         return published.getMonth() === 1 && published.getDate() === 28;
       });
     }
 
-    // Only take first 2 videos (for example: Jan 19, 2025 & Jan 19, 2026)
-    matches.slice(0, 2).forEach(item => createVideoCard(container, item));
+    // Take only first 2 videos
+    timothyMatches.slice(0, 2).forEach(item => homeVideos.push({ container: timothyContainer, item }));
 
-    if (matches.length === 0) {
-      container.innerHTML = '<p>No episodes released on this day.</p>';
-    }
+    // Render the cards
+    homeVideos.forEach(obj => createVideoCard(obj.container, obj.item));
   }
 
-  // Load both playlists
-  loadDailyDevotion(PLAYLISTS.daily.id, PLAYLISTS.daily.container);
-  loadTimothyProject(PLAYLISTS.timothy.id, PLAYLISTS.timothy.container);
+  loadHomeVideos();
 </script>
 
 </body>
