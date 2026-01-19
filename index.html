@@ -244,60 +244,6 @@
     return data.includes(id);
   }
 
-  // Daily Devotion: Show only today's video
-  async function loadDailyDevotion(playlistId, containerId) {
-    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${playlistId}&key=${API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
-
-    // Find video published today
-    const todaysVideo = data.items.find(item => item.snippet.publishedAt.startsWith(todayStr));
-
-    if (todaysVideo) {
-      createVideoCard(container, todaysVideo);
-    } else {
-      container.innerHTML = '<p>No video for today.</p>';
-    }
-  }
-
-  // Timothy Project: Show only episodes on this day (month + day), any year
-  async function loadTimothyProject(playlistId, containerId) {
-    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-
-    const today = new Date();
-    const month = today.getMonth(); // 0-based
-    const date = today.getDate();
-
-    let matches = data.items.filter(item => {
-      const published = new Date(item.snippet.publishedAt);
-      return published.getMonth() === month && published.getDate() === date;
-    });
-
-    // Leap year fallback: Feb 29 → Feb 28
-    if (month === 1 && date === 29 && matches.length === 0) {
-      matches = data.items.filter(item => {
-        const published = new Date(item.snippet.publishedAt);
-        return published.getMonth() === 1 && published.getDate() === 28;
-      });
-    }
-
-    if (matches.length === 0) {
-      container.innerHTML = '<p>No episodes released on this day.</p>';
-    } else {
-      matches.forEach(item => createVideoCard(container, item));
-    }
-  }
-
-  // Helper function to create video card
   function createVideoCard(container, item) {
     const videoId = item.snippet.resourceId.videoId;
     const title = item.snippet.title;
@@ -336,6 +282,59 @@
     };
 
     container.appendChild(card);
+  }
+
+  // Daily Devotion: only today's video
+  async function loadDailyDevotion(playlistId, containerId) {
+    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=12&playlistId=${playlistId}&key=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    const todaysVideo = data.items.find(item => item.snippet.publishedAt.startsWith(todayStr));
+
+    if (todaysVideo) {
+      createVideoCard(container, todaysVideo);
+    } else {
+      container.innerHTML = '<p>No video for today.</p>';
+    }
+  }
+
+  // Timothy Project: only episodes with same month+day
+  async function loadTimothyProject(playlistId, containerId) {
+    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+
+    const today = new Date();
+    const month = today.getMonth(); // 0-based
+    const date = today.getDate();
+
+    let matches = data.items.filter(item => {
+      const published = new Date(item.snippet.publishedAt);
+      return published.getMonth() === month && published.getDate() === date;
+    });
+
+    // Leap year fallback: Feb 29 → Feb 28
+    if (month === 1 && date === 29 && matches.length === 0) {
+      matches = data.items.filter(item => {
+        const published = new Date(item.snippet.publishedAt);
+        return published.getMonth() === 1 && published.getDate() === 28;
+      });
+    }
+
+    // Only take first 2 videos (for example: Jan 19, 2025 & Jan 19, 2026)
+    matches.slice(0, 2).forEach(item => createVideoCard(container, item));
+
+    if (matches.length === 0) {
+      container.innerHTML = '<p>No episodes released on this day.</p>';
+    }
   }
 
   // Load both playlists
