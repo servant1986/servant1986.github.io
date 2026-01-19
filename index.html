@@ -75,64 +75,86 @@
 </div>
 
 <script>
-const API_KEY = "AIzaSyDRd_YN-tjyy1wuDpotgYHoOT9niiOOsEQ"; // Replace with your API Key
+/* ==========================
+   CONFIG
+========================== */
+const API_KEY = "AIzaSyDRd_YN-tjyy1wuDpotgYHoOT9niiOOsEQ";
 const PLAYLISTS = {
   daily: "PLtpb-Y9QLGz5et2tAyq7p0bWnM9Fs82-p",
   timothy: "PLtpb-Y9QLGz7n5-ujPDAfar7P1QIe_vqj"
 };
 
+/* ==========================
+   MODAL LOGIC
+========================== */
 const modal = document.getElementById("videoModal");
 const frame = document.getElementById("videoFrame");
-document.querySelector('.close').onclick = closeModal;
+
+document.querySelector(".close").onclick = closeModal;
 modal.onclick = e => e.target === modal && closeModal();
 
 function openModal(videoId) {
   frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-  modal.style.display = 'flex';
+  modal.style.display = "flex";
 }
-function closeModal() { frame.src = ''; modal.style.display = 'none'; }
 
-function getStore(key) { return JSON.parse(localStorage.getItem(key)) || []; }
+function closeModal() {
+  frame.src = "";
+  modal.style.display = "none";
+}
+
+/* ==========================
+   LOCAL STORAGE (FINISHED)
+========================== */
+function getStore(key) {
+  return JSON.parse(localStorage.getItem(key)) || [];
+}
+
 function toggleStore(key, id) {
   const data = getStore(key);
   const index = data.indexOf(id);
+
   index === -1 ? data.push(id) : data.splice(index, 1);
   localStorage.setItem(key, JSON.stringify(data));
+
   return data.includes(id);
 }
 
+/* ==========================
+   VIDEO CARD
+========================== */
 function createVideoCard(container, item) {
   const videoId = item.snippet.resourceId.videoId;
   const title = item.snippet.title;
   const thumb = item.snippet.thumbnails.medium.url;
+  const finished = getStore("finished");
 
-  const done = getStore('finished');
-
-  const card = document.createElement('div');
-  card.className = 'card';
+  const card = document.createElement("div");
+  card.className = "card";
   card.innerHTML = `
     <img src="${thumb}">
     <div class="card-content">
       <h3>${title}</h3>
-      <span class="done" title="Mark as finished">${done.includes(videoId) ? '❤️' : '🤍'}</span>
+      <span class="done" title="Mark as finished">
+        ${finished.includes(videoId) ? "❤️" : "🤍"}
+      </span>
     </div>
   `;
 
   card.onclick = () => openModal(videoId);
 
-  const doneBtn = card.querySelector('.done');
-  doneBtn.onclick = e => {
+  card.querySelector(".done").onclick = e => {
     e.stopPropagation();
-    const finished = toggleStore('finished', videoId);
-    doneBtn.textContent = finished ? '❤️' : '🤍';
+    const isDone = toggleStore("finished", videoId);
+    e.target.textContent = isDone ? "❤️" : "🤍";
   };
 
   container.appendChild(card);
 }
 
-// --------------------
-// Home Page Logic
-// --------------------
+/* ==========================
+   HOME PAGE CONTROLS
+========================== */
 const datePicker = document.getElementById("datePicker");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
@@ -140,61 +162,91 @@ const container = document.getElementById("homeVideos");
 
 const today = new Date();
 const currentYear = today.getFullYear();
-const minDate = new Date(currentYear,0,1); // Jan 1
-let selectedDate = today;
+const minDate = new Date(currentYear, 0, 1); // Jan 1 of current year
+let selectedDate = new Date(today);
 
-// Initialize date picker
-datePicker.min = minDate.toISOString().split('T')[0];
-datePicker.max = today.toISOString().split('T')[0];
-datePicker.value = selectedDate.toISOString().split('T')[0];
+/* Init date picker */
+datePicker.min = minDate.toISOString().split("T")[0];
+datePicker.max = today.toISOString().split("T")[0];
+datePicker.value = selectedDate.toISOString().split("T")[0];
 
 function updateButtons() {
   prevBtn.disabled = selectedDate <= minDate;
   nextBtn.disabled = selectedDate >= today;
 }
 
-// Change date by buttons
-prevBtn.onclick = () => { selectedDate.setDate(selectedDate.getDate() -1); datePicker.value = selectedDate.toISOString().split('T')[0]; loadHomeVideos(); }
-nextBtn.onclick = () => { selectedDate.setDate(selectedDate.getDate() +1); datePicker.value = selectedDate.toISOString().split('T')[0]; loadHomeVideos(); }
+prevBtn.onclick = () => {
+  selectedDate.setDate(selectedDate.getDate() - 1);
+  datePicker.value = selectedDate.toISOString().split("T")[0];
+  loadHomeVideos();
+};
+
+nextBtn.onclick = () => {
+  selectedDate.setDate(selectedDate.getDate() + 1);
+  datePicker.value = selectedDate.toISOString().split("T")[0];
+  loadHomeVideos();
+};
 
 datePicker.onchange = () => {
   selectedDate = new Date(datePicker.value);
   loadHomeVideos();
 };
 
+/* ==========================
+   FETCH HELPERS
+========================== */
+async function fetchPlaylist(playlistId) {
+  const res = await fetch(
+    `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${API_KEY}`
+  );
+  const data = await res.json();
+  return data.items || [];
+}
+
+/* ==========================
+   MAIN LOGIC
+========================== */
 async function loadHomeVideos() {
-  container.innerHTML = '';
+  container.innerHTML = "";
   updateButtons();
 
   const month = selectedDate.getMonth();
-  const date = selectedDate.getDate();
-  const selectedStr = selectedDate.toISOString().split('T')[0];
+  const day = selectedDate.getDate();
+  const selectedStr = selectedDate.toISOString().split("T")[0];
 
   let homeVideos = [];
 
-  // 1️⃣ Daily Devotion (current year, selected date)
-  let res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${PLAYLISTS.daily}&key=${API_KEY}`);
-  let data = await res.json();
-  const dailyVideo = data.items.find(item => item.snippet.publishedAt.startsWith(selectedStr));
-  if(dailyVideo) homeVideos.push(dailyVideo);
+  /* 1️⃣ Daily Devotion — exact date (YYYY-MM-DD) */
+  const dailyItems = await fetchPlaylist(PLAYLISTS.daily);
+  const dailyVideo = dailyItems.find(item =>
+    item.snippet.publishedAt.startsWith(selectedStr)
+  );
+  if (dailyVideo) homeVideos.push(dailyVideo);
 
-  // 2️⃣ Timothy Project (month/day, 2025 & 2026)
-  res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${PLAYLISTS.timothy}&key=${API_KEY}`);
-  data = await res.json();
-  const timothyMatches = data.items.filter(item => {
-    const pub = new Date(item.snippet.publishedAt);
-    return pub.getMonth() === month && pub.getDate() === date;
-  }).slice(0,2); // take first 2 videos
-  homeVideos.push(...timothyMatches);
+  /* 2️⃣ Timothy Project — month/day only (YEAR IGNORED) */
+  const timothyItems = await fetchPlaylist(PLAYLISTS.timothy);
+  const timothyVideos = timothyItems
+    .filter(item => {
+      const pub = new Date(item.snippet.publishedAt);
+      return pub.getMonth() === month && pub.getDate() === day;
+    })
+    .slice(0, 2); // ALWAYS 2 videos max
 
-  if(homeVideos.length === 0) {
+  homeVideos.push(...timothyVideos);
+
+  /* Render */
+  if (homeVideos.length === 0) {
     container.innerHTML = "<p>No videos available for this date.</p>";
   } else {
-    homeVideos.forEach(video => createVideoCard(container, video));
+    homeVideos.forEach(video =>
+      createVideoCard(container, video)
+    );
   }
 }
 
-// Initial load
+/* ==========================
+   INITIAL LOAD
+========================== */
 loadHomeVideos();
 </script>
 
